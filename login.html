@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💈 Barber Studio - Iniciar Sesión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      color: #d4af37;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: #111;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #d4af37;
+      width: 320px;
+      text-align: center;
+    }
+
+    h2 { margin-bottom: 25px; color: #d4af37; }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #d4af37;
+      border-radius: 5px;
+      background-color: #222;
+      color: white;
+    }
+
+    button {
+      width: 95%;
+      padding: 10px;
+      background-color: #d4af37;
+      border: none;
+      color: #111;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover { background-color: #f5d76e; }
+
+    #mensaje {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    a { color: white; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Estilo para la imagen */
+    .login-container img {
+      width: 150px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <img src="images/login.jpg" alt="Logo Barbería">
+    <h2>Iniciar Sesión</h2>
+
+    <form id="formLogin">
+      <input type="email" id="email" placeholder="Correo" required><br>
+      <input type="password" id="password" placeholder="Contraseña" required><br>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <div id="mensaje"></div>
+
+    <p>¿No tienes cuenta? <a href="register.html">Crear cuenta</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById("formLogin");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // **ADMIN LOCAL**
+      if (email === "admin@barber.com" && password === "12345") {
+        localStorage.setItem("usuario", "admin");
+
+        mensaje.style.color = "#0f0";
+        mensaje.textContent = "✅ Bienvenido dueño";
+
+        setTimeout(() => {
+          window.location.href = "admin.html";
+        }, 800);
+
+        return;
+      }
+
+      // **LOGIN NORMAL DESDE MONGODB (BACKEND)**
+      try {
+        const respuesta = await fetch("http://localhost:3000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await respuesta.json();
+
+        if (!data.ok) {
+          mensaje.style.color = "red";
+          mensaje.textContent = data.mensaje;
+          return;
+        }
+
+        // Guarda nombre del usuario normal
+        localStorage.setItem("usuario", data.nombre);
+
+        mensaje.style.color = "#0f0";
+        mensaje.textContent = "✔ Bienvenido " + data.nombre;
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 800);
+
+      } catch (error) {
+        mensaje.style.color = "red";
+        mensaje.textContent = "❌ Error al conectar al servidor.";
+      }
+    });
+  </script>
+
+</body>
+</html>

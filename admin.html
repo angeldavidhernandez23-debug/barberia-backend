@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel del Dueño - Citas y Empleados</title>
+  <style>
+    body {
+      background: #000;
+      color: #d4af37;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+
+    h1, h2 { text-align:center; margin-bottom: 18px; }
+
+    .top-row {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .left-controls {
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    input[type="text"], input[type="date"], input[type="time"], input[type="email"], input[type="password"] {
+      padding:8px;
+      border-radius:6px;
+      border: 1px solid #444;
+      background:#111;
+      color: #fff;
+    }
+
+    button {
+      background: red;
+      border: none;
+      padding: 8px 12px;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    button.secondary { background: #d4af37; color:#000; }
+    button.ghost { background: transparent; border: 1px solid #444; color:#d4af37; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      color: white;
+    }
+    th, td {
+      border: 1px solid #2b2b2b;
+      padding: 10px;
+      text-align: center;
+    }
+    th { background: #111; color:#d4af37; }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    .modal-content {
+      background: #0f0f0f;
+      padding: 18px;
+      border-radius: 8px;
+      width: 360px;
+      color: #fff;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.7);
+    }
+    .modal-content h3 { margin-top:0; color:#d4af37; }
+
+    .row { margin-bottom: 8px; }
+    .actions { display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
+    .small { padding:6px 10px; font-size:0.95rem; border-radius:6px; }
+
+    #msg, #msgEmpleado { margin-top:8px; font-size:0.95rem; }
+
+    @media (max-width:600px) {
+      .modal-content { width: 92%; }
+      .top-row { flex-direction: column; align-items: stretch; gap:8px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ----- CONTROL SUPERIOR ----- -->
+  <div class="top-row">
+    <div class="left-controls">
+      <input id="searchInput" type="text" placeholder="Buscar por nombre..." />
+      <button id="searchBtn" class="secondary">Buscar</button>
+      <button id="showAllBtn" class="ghost">Mostrar todas</button>
+    </div>
+
+    <div>
+      <button id="cerrarSesion" class="secondary">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- ----- CITAS ----- -->
+  <h1>📋 Citas Agendadas</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Servicio</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaCitas"></tbody>
+  </table>
+  <div id="msg" aria-live="polite"></div>
+
+  <!-- MODAL EDITAR CITA -->
+  <div id="modalCita" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h3>Editar Cita</h3>
+      <div class="row">
+        <label>Nombre del cliente</label>
+        <input id="editNombre" type="text" />
+      </div>
+      <div class="row">
+        <label>Servicio</label>
+        <input id="editServicio" type="text" />
+      </div>
+      <div class="row">
+        <label>Fecha</label>
+        <input id="editFecha" type="date" />
+      </div>
+      <div class="row">
+        <label>Hora</label>
+        <input id="editHora" type="time" />
+      </div>
+      <div class="actions">
+        <button class="small" id="guardarBtn">Guardar cambios</button>
+        <button class="small" id="cancelarBtn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ----- EMPLEADOS ----- -->
+  <h2>👥 Empleados</h2>
+  <button id="btnAgregarEmpleado" class="secondary">➕ Agregar Empleado</button>
+
+  <!-- MODAL AGREGAR EMPLEADO -->
+  <div id="modalEmpleado" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h3>Agregar Empleado</h3>
+      <div class="row">
+        <label>Nombre</label>
+        <input id="empNombre" type="text" />
+      </div>
+      <div class="row">
+        <label>Correo</label>
+        <input id="empCorreo" type="email" />
+      </div>
+      <div class="row">
+        <label>Contraseña</label>
+        <input id="empPassword" type="password" />
+      </div>
+      <div class="actions">
+        <button class="small" id="guardarEmpleado">Guardar</button>
+        <button class="small" id="cancelarEmpleado">Cancelar</button>
+      </div>
+      <div id="msgEmpleado"></div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = "http://localhost:3000"; // Cambiar si tu backend es otra URL
+
+    // ---------- ELEMENTOS CITAS ----------
+    const tablaBody = document.getElementById("tablaCitas");
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const showAllBtn = document.getElementById("showAllBtn");
+    const cerrarSesionBtn = document.getElementById("cerrarSesion");
+    const msg = document.getElementById("msg");
+
+    const modalCita = document.getElementById("modalCita");
+    const editNombre = document.getElementById("editNombre");
+    const editServicio = document.getElementById("editServicio");
+    const editFecha = document.getElementById("editFecha");
+    const editHora = document.getElementById("editHora");
+    const guardarBtn = document.getElementById("guardarBtn");
+    const cancelarBtn = document.getElementById("cancelarBtn");
+
+    let cacheCitas = [];
+    let citaSeleccionadaId = null;
+
+    // ---------- ELEMENTOS EMPLEADOS ----------
+    const btnAgregarEmpleado = document.getElementById("btnAgregarEmpleado");
+    const modalEmpleado = document.getElementById("modalEmpleado");
+    const empNombre = document.getElementById("empNombre");
+    const empCorreo = document.getElementById("empCorreo");
+    const empPassword = document.getElementById("empPassword");
+    const guardarEmpleado = document.getElementById("guardarEmpleado");
+    const cancelarEmpleado = document.getElementById("cancelarEmpleado");
+    const msgEmpleado = document.getElementById("msgEmpleado");
+
+    // ---------- FUNCIONES GENERALES ----------
+    function bloquearFechasPasadas() {
+      const hoy = new Date();
+      const yyyy = hoy.getFullYear();
+      const mm = String(hoy.getMonth() + 1).padStart(2, "0");
+      const dd = String(hoy.getDate()).padStart(2, "0");
+      const fechaMin = `${yyyy}-${mm}-${dd}`;
+      editFecha.min = fechaMin;
+    }
+    bloquearFechasPasadas();
+
+    function setMsg(text, tipo="info") {
+      msg.textContent = text;
+      msg.style.color = tipo==="error"?"#ff6666":"#d4af37";
+    }
+
+    // ---------- CITAS ----------
+    async function cargarCitas() {
+      setMsg("Cargando citas...");
+      try {
+        const res = await fetch(`${BASE}/citas`);
+        const data = await res.json();
+        cacheCitas = data.citas || [];
+        renderCitas(cacheCitas);
+        setMsg(`Cargadas ${cacheCitas.length} citas.`);
+      } catch (err) {
+        console.error(err);
+        setMsg("Error de conexión al cargar citas", "error");
+        tablaBody.innerHTML = "<tr><td colspan='5'>Error de conexión</td></tr>";
+      }
+    }
+
+    function renderCitas(lista) {
+      tablaBody.innerHTML = "";
+      if (!lista || lista.length===0) {
+        tablaBody.innerHTML = "<tr><td colspan='5'>No hay citas</td></tr>";
+        return;
+      }
+      lista.forEach(cita=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML = `
+          <td>${cita.nombreCliente||""}</td>
+          <td>${cita.servicios||""}</td>
+          <td>${cita.fecha||""}</td>
+          <td>${cita.hora||""}</td>
+          <td>
+            <button onclick="abrirModalCita('${cita._id}')">Editar</button>
+            <button onclick="eliminarCita('${cita._id}')">Eliminar</button>
+          </td>
+        `;
+        tablaBody.appendChild(tr);
+      });
+    }
+
+    async function buscarCitas() {
+      const texto = (searchInput.value||"").trim();
+      if (!texto) { renderCitas(cacheCitas); return; }
+      setMsg(`Buscando "${texto}"...`);
+      const filtradas = cacheCitas.filter(c => (c.nombreCliente||"").toLowerCase().includes(texto.toLowerCase()));
+      renderCitas(filtradas);
+      setMsg(`Encontradas ${filtradas.length} citas.`);
+    }
+
+    function abrirModalCita(id) {
+      const cita = cacheCitas.find(c => c._id===id);
+      if(!cita) return;
+      citaSeleccionadaId = id;
+      editNombre.value = cita.nombreCliente||"";
+      editServicio.value = cita.servicios||"";
+      editFecha.value = cita.fecha||"";
+      editHora.value = cita.hora||"";
+      modalCita.style.display="flex";
+      modalCita.setAttribute("aria-hidden","false");
+    }
+
+    function cerrarModalCita() {
+      modalCita.style.display="none";
+      modalCita.setAttribute("aria-hidden","true");
+      citaSeleccionadaId=null;
+    }
+
+    async function guardarCambios() {
+      if(!citaSeleccionadaId) return;
+      const payload = {
+        nombreCliente: editNombre.value.trim(),
+        servicios: editServicio.value.trim(),
+        fecha: editFecha.value,
+        hora: editHora.value
+      };
+      try {
+        const res = await fetch(`${BASE}/citas/${citaSeleccionadaId}`, {
+          method:"PUT",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if(!res.ok || (json && json.ok===false)) { alert("Error actualizando cita"); return; }
+        cacheCitas = cacheCitas.map(c => c._id===citaSeleccionadaId?{...c,...payload}:c);
+        cerrarModalCita();
+        renderCitas(cacheCitas);
+        setMsg("Cita actualizada correctamente");
+      } catch(err) { console.error(err); alert("Error de conexión"); }
+    }
+
+    async function eliminarCita(id) {
+      if(!confirm("¿Eliminar esta cita?")) return;
+      try {
+        const res = await fetch(`${BASE}/citas/${id}`, { method:"DELETE" });
+        const json = await res.json();
+        if(res.ok && json.ok) {
+          cacheCitas = cacheCitas.filter(c => c._id!==id);
+          renderCitas(cacheCitas);
+          setMsg("Cita eliminada.");
+        } else { alert("No se pudo eliminar"); }
+      } catch(err){ console.error(err); alert("Error de conexión"); }
+    }
+
+    // ---------- EMPLEADOS ----------
+    btnAgregarEmpleado.addEventListener("click",()=>{
+      empNombre.value="";
+      empCorreo.value="";
+      empPassword.value="";
+      msgEmpleado.textContent="";
+      modalEmpleado.style.display="flex";
+      modalEmpleado.setAttribute("aria-hidden","false");
+    });
+
+    function cerrarModalEmpleado() {
+      modalEmpleado.style.display="none";
+      modalEmpleado.setAttribute("aria-hidden","true");
+    }
+
+    cancelarEmpleado.addEventListener("click",cerrarModalEmpleado);
+    modalEmpleado.addEventListener("click",e=>{if(e.target===modalEmpleado) cerrarModalEmpleado();});
+
+    guardarEmpleado.addEventListener("click", async()=>{
+      const nombre = empNombre.value.trim();
+      const correo = empCorreo.value.trim();
+      const password = empPassword.value.trim();
+      if(!nombre||!correo||!password){ msgEmpleado.textContent="Todos los campos son obligatorios"; msgEmpleado.style.color="#ff6666"; return; }
+      try {
+        const res = await fetch(`${BASE}/empleados`,{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({nombre,correo,password})
+        });
+        const json = await res.json();
+        if(!res.ok || (json && json.ok===false)){ msgEmpleado.textContent="No se pudo guardar el empleado"; msgEmpleado.style.color="#ff6666"; return; }
+        msgEmpleado.textContent="Empleado agregado correctamente"; msgEmpleado.style.color="#d4af37";
+        setTimeout(cerrarModalEmpleado,1000);
+      } catch(err){ console.error(err); msgEmpleado.textContent="Error de conexión"; msgEmpleado.style.color="#ff6666"; }
+    });
+
+    // ---------- EVENTOS ----------
+    searchBtn.addEventListener("click",buscarCitas);
+    searchInput.addEventListener("keydown",(e)=>{if(e.key==="Enter") buscarCitas();});
+    showAllBtn.addEventListener("click",()=>{renderCitas(cacheCitas); setMsg(`Mostrando todas (${cacheCitas.length})`);});
+    guardarBtn.addEventListener("click",guardarCambios);
+    cancelarBtn.addEventListener("click",cerrarModalCita);
+    window.addEventListener("keydown",(e)=>{if(e.key==="Escape"){cerrarModalCita(); cerrarModalEmpleado();}});
+    
+    cerrarSesionBtn.addEventListener("click",()=>{
+      localStorage.removeItem("usuario");
+      window.location.href="login.html";
+    });
+
+    // ---------- INICIALIZAR ----------
+    cargarCitas();
+  </script>
+</body>
+</html>
