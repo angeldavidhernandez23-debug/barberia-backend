@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 
 // --- Inicializar app ---
 const app = express();
@@ -8,6 +9,9 @@ const app = express();
 // --- Middlewares ---
 app.use(express.json());
 app.use(cors());
+
+// --- Servir archivos estáticos desde 'public' ---
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Conexión a MongoDB Atlas ---
 mongoose.connect(
@@ -24,8 +28,7 @@ const Usuario = mongoose.model("usuarios", {
   password: String
 });
 
-// IMPORTACIÓN CORRECTA DEL MODELO EMPLEADO
-// Debe coincidir EXACTAMENTE con el nombre del archivo en /models/
+// Modelo Empleado
 const Empleado = require("./models/empleado");
 
 // ---------------------
@@ -34,14 +37,11 @@ const Empleado = require("./models/empleado");
 app.post("/register", async (req, res) => {
   try {
     const { nombre, email, password } = req.body;
-
     const existente = await Usuario.findOne({ email });
-    if (existente)
-      return res.json({ ok: false, mensaje: "El correo ya está registrado" });
+    if (existente) return res.json({ ok: false, mensaje: "El correo ya está registrado" });
 
     const nuevoUsuario = new Usuario({ nombre, email, password });
     await nuevoUsuario.save();
-
     res.json({ ok: true, mensaje: "Usuario registrado correctamente" });
   } catch (err) {
     console.error(err);
@@ -52,11 +52,8 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const usuario = await Usuario.findOne({ email, password });
-    if (!usuario)
-      return res.json({ ok: false, mensaje: "Correo o contraseña incorrectos" });
-
+    if (!usuario) return res.json({ ok: false, mensaje: "Correo o contraseña incorrectos" });
     res.json({ ok: true, nombre: usuario.nombre });
   } catch (err) {
     console.error(err);
@@ -70,17 +67,13 @@ app.post("/login", async (req, res) => {
 app.post("/empleados", async (req, res) => {
   try {
     const { nombre, correo, password } = req.body;
-
-    if (!nombre || !correo || !password)
-      return res.status(400).json({ ok: false, mensaje: "Faltan datos" });
+    if (!nombre || !correo || !password) return res.status(400).json({ ok: false, mensaje: "Faltan datos" });
 
     const existente = await Empleado.findOne({ correo });
-    if (existente)
-      return res.json({ ok: false, mensaje: "Correo ya registrado" });
+    if (existente) return res.json({ ok: false, mensaje: "Correo ya registrado" });
 
     const nuevoEmpleado = new Empleado({ nombre, correo, password });
     await nuevoEmpleado.save();
-
     res.json({ ok: true, empleadoId: nuevoEmpleado._id });
   } catch (err) {
     console.error(err);
@@ -88,32 +81,35 @@ app.post("/empleados", async (req, res) => {
   }
 });
 
-// LOGIN EMPLEADO
 app.post("/login-empleado", async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const empleado = await Empleado.findOne({ correo: email, password });
-
-    if (!empleado)
-      return res.json({ ok: false, mensaje: "Empleado no encontrado" });
-
+    if (!empleado) return res.json({ ok: false, mensaje: "Empleado no encontrado" });
     res.json({ ok: true, nombre: empleado.nombre });
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, mensaje: "Error interno" });
   }
 });
+
 app.get("/empleados/lista", async (req, res) => {
   const empleados = await Empleado.find();
   res.json(empleados);
 });
 
-
 // ---------------------
 //   RUTAS CITAS
 // ---------------------
 app.use("/citas", require("./routes/citas"));
+
+// ---------------------
+//   SERVIR LOGIN COMO PÁGINA INICIAL
+// ---------------------
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
+
 // --- INICIAR SERVIDOR ---
-const PORT = 3000;
-app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Servidor corriendo en el puerto ${PORT}`));
