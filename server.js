@@ -17,22 +17,27 @@ mongoose.connect(
 .catch(err => console.log("❌ Error al conectar:", err));
 
 // --- MODELOS ---
+// Modelo Cliente/Usuario
 const Usuario = mongoose.model("usuarios", {
   nombre: String,
   email: String,
   password: String
 });
 
-// Modelo Empleado desde carpeta models
+// IMPORTACIÓN CORRECTA DEL MODELO EMPLEADO
+// Debe coincidir EXACTAMENTE con el nombre del archivo en /models/
 const Empleado = require("./models/empleado");
 
-// --- RUTAS USUARIOS ---
+// ---------------------
+//   RUTAS USUARIOS
+// ---------------------
 app.post("/register", async (req, res) => {
   try {
     const { nombre, email, password } = req.body;
 
     const existente = await Usuario.findOne({ email });
-    if (existente) return res.json({ ok: false, mensaje: "El correo ya está registrado" });
+    if (existente)
+      return res.json({ ok: false, mensaje: "El correo ya está registrado" });
 
     const nuevoUsuario = new Usuario({ nombre, email, password });
     await nuevoUsuario.save();
@@ -40,7 +45,7 @@ app.post("/register", async (req, res) => {
     res.json({ ok: true, mensaje: "Usuario registrado correctamente" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ ok:false, mensaje:"Error interno" });
+    res.status(500).json({ ok: false, mensaje: "Error interno" });
   }
 });
 
@@ -49,39 +54,66 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     const usuario = await Usuario.findOne({ email, password });
-    if (!usuario) return res.json({ ok: false, mensaje: "Correo o contraseña incorrectos" });
+    if (!usuario)
+      return res.json({ ok: false, mensaje: "Correo o contraseña incorrectos" });
 
     res.json({ ok: true, nombre: usuario.nombre });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ ok:false, mensaje:"Error interno" });
+    res.status(500).json({ ok: false, mensaje: "Error interno" });
   }
 });
 
-// --- RUTAS EMPLEADOS ---
+// ---------------------
+//   RUTAS EMPLEADOS
+// ---------------------
 app.post("/empleados", async (req, res) => {
   try {
     const { nombre, correo, password } = req.body;
+
     if (!nombre || !correo || !password)
-      return res.status(400).json({ ok:false, mensaje:"Faltan datos" });
+      return res.status(400).json({ ok: false, mensaje: "Faltan datos" });
 
     const existente = await Empleado.findOne({ correo });
-    if (existente) return res.json({ ok:false, mensaje:"Correo ya registrado" });
+    if (existente)
+      return res.json({ ok: false, mensaje: "Correo ya registrado" });
 
     const nuevoEmpleado = new Empleado({ nombre, correo, password });
     await nuevoEmpleado.save();
 
-    res.json({ ok:true, empleadoId: nuevoEmpleado._id });
+    res.json({ ok: true, empleadoId: nuevoEmpleado._id });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ ok:false, mensaje:"Error interno" });
+    res.status(500).json({ ok: false, mensaje: "Error interno" });
   }
 });
 
-// --- RUTAS CITAS ---
-const citasRoutes = require("./routes/citas");
-app.use("/citas", citasRoutes);
+// LOGIN EMPLEADO
+app.post("/login-empleado", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
+    const empleado = await Empleado.findOne({ correo: email, password });
+
+    if (!empleado)
+      return res.json({ ok: false, mensaje: "Empleado no encontrado" });
+
+    res.json({ ok: true, nombre: empleado.nombre });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, mensaje: "Error interno" });
+  }
+});
+app.get("/empleados/lista", async (req, res) => {
+  const empleados = await Empleado.find();
+  res.json(empleados);
+});
+
+
+// ---------------------
+//   RUTAS CITAS
+// ---------------------
+app.use("/citas", require("./routes/citas"));
 // --- INICIAR SERVIDOR ---
 const PORT = 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));

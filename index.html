@@ -312,37 +312,40 @@
       <select id="servicio">
         <option value="">Selecciona un servicio</option>
 
-        <optgroup label="Corte de Cabello">
-          <option value="Clásico">Clásico</option>
-          <option value="Base">Base</option>
-          <option value="Desvanecido">Desvanecido</option>
-          <option value="Navaja">Navaja</option>
-          <option value="Fade">Fade</option>
-          <option value="Delineado de barba">Delineado de barba</option>
-          <option value="Barba spa">Barba spa</option>
-        </optgroup>
+    <optgroup label="Corte de Cabello">
+            <option value="Clásico" data-precio="120">Clásico - $120</option>
+            <option value="Base" data-precio="120">Base - $120</option>
+            <option value="Desvanecido" data-precio="170">Desvanecido - $170</option>
+            <option value="Navaja" data-precio="180">Navaja - $180</option>
+            <option value="Fade" data-precio="200">Fade - $200</option>
+            <option value="Delineado de barba" data-precio="70">Delineado de barba - $70</option>
+            <option value="Barba spa" data-precio="140">Barba spa - $140</option>
+          </optgroup>
 
-        <optgroup label="Facial">
-          <option value="Exfoliante">Exfoliante</option>
-          <option value="Hidratante">Hidratante</option>
-          <option value="Puntos negros">Puntos negros</option>
-          <option value="Ozono">Ozono</option>
-        </optgroup>
+          <optgroup label="Facial">
+            <option value="Exfoliante" data-precio="100">Exfoliante - $100</option>
+            <option value="Hidratante" data-precio="120">Hidratante - $120</option>
+            <option value="Puntos negros" data-precio="130">Puntos negros - $130</option>
+            <option value="Ozono" data-precio="140">Ozono - $140</option>
+            <option value="Mascarilla facial" data-precio="100">Mascarilla facial - $100</option>
+          </optgroup>
 
-        <optgroup label="Depilación">
-          <option value="Ceja">Ceja</option>
-          <option value="Nasal">Nasal</option>
-          <option value="Rostro">Rostro</option>
-          <option value="Bigote">Bigote</option>
-          <option value="Barba">Barba</option>
-        </optgroup>
+          <optgroup label="Depilación">
+            <option value="Ceja" data-precio="60">Ceja - $60</option>
+            <option value="Nasal" data-precio="50">Nasal - $50</option>
+            <option value="Rostro" data-precio="70">Rostro - $70</option>
+            <option value="Bigote" data-precio="55">Bigote - $55</option>
+            <option value="Barba depilación" data-precio="80">Barba - $80</option>
+          </optgroup>
 
-        <optgroup label="Servicios Extras">
-          <option value="Pedicure">Pedicure</option>
-          <option value="Efectos de color">Efectos de color</option>
-          <option value="Permanente">Permanente</option>
-          <option value="Manicure">Manicure</option>
-        </optgroup>
+          <optgroup label="Servicios Extras">
+            <option value="Pedicure" data-precio="200">Pedicure - $200</option>
+            <option value="Efectos de color" data-precio="300">Efectos de color - $300</option>
+            <option value="Permanente" data-precio="250">Permanente - $250</option>
+            <option value="Manicure" data-precio="180">Manicure - $180</option>
+            <option value="Lavado de cabello" data-precio="50">Lavado de cabello - $50</option>
+            <option value="Tinte" data-precio="250">Tinte - $250</option>
+          </optgroup>
       </select>
 
       <button type="button" id="btnAgregar" class="btn-enviar" style="margin-top:10px;">
@@ -384,26 +387,29 @@
     let servicios = [];           // array con servicios agregados
     let total = 0;               // total acumulado
     const precios = {
-      "Clásico": 0,
-      "Base": 0,
-      "Desvanecido": 0,
-      "Navaja": 0,
-      "Fade": 150,
-      "Delineado de barba": 0,
-      "Barba spa": 0,
-      "Exfoliante": 0,
-      "Hidratante": 0,
-      "Puntos negros": 0,
-      "Ozono": 0,
-      "Ceja": 0,
-      "Nasal": 0,
-      "Rostro": 0,
-      "Bigote": 0,
-      "Barba": 0,
-      "Pedicure": 0,
-      "Efectos de color": 0,
-      "Permanente": 0,
-      "Manicure": 0
+      "Clásico": 120,
+      "Base": 120,
+      "Desvanecido": 170,
+      "Navaja": 180,
+      "Fade": 200,
+      "Delineado de barba": 70,
+      "Barba spa":140,
+      "Exfoliante": 100,
+      "Hidratante": 120,
+      "Puntos negros": 130,
+      "Ozono": 140,
+      "Mascarilla facial":100,
+      "Ceja": 60,
+      "Nasal": 50,
+      "Rostro": 70,
+      "Bigote": 55,
+      "Barba": 80,
+      "Pedicure": 200,
+      "Efectos de color": 300,
+      "Permanente": 250,
+      "Manicure": 180,
+      "Lavado de cabello":50,
+      "Tinte":250
     };
 
     // ---------- ELEMENTOS ----------

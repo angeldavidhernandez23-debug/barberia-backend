@@ -1,17 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
 
-// --- MODELO CITA ---
-const Cita = mongoose.model("citas", {
-  nombreCliente: String,
-  servicios: String,
-  fecha: String,
-  hora: String,
-  completada: { type: Boolean, default: false }
-});
-
-// ---------- RUTAS ----------
+const Cita = require("../models/Cita.js"); // <- AQUÍ SE IMPORTA EL MODELO CORRECTO
 
 // Obtener todas las citas
 router.get("/", async (req, res) => {
@@ -53,14 +43,14 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Actualizar cita (editar)
+// Actualizar cita
 router.put("/:id", async (req, res) => {
   try {
     const { nombreCliente, servicios, fecha, hora, completada } = req.body;
+
     const cita = await Cita.findById(req.params.id);
     if (!cita) return res.status(404).json({ ok:false, mensaje:"Cita no encontrada" });
 
-    // Actualizar campos
     if (nombreCliente) cita.nombreCliente = nombreCliente;
     if (servicios) cita.servicios = servicios;
     if (fecha) cita.fecha = fecha;
@@ -68,7 +58,7 @@ router.put("/:id", async (req, res) => {
     if (completada !== undefined) cita.completada = completada;
 
     await cita.save();
-    res.json({ ok:true, mensaje:"Cita actualizada correctamente" });
+    res.json({ ok:true, mensaje:"Cita actualizada" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok:false, mensaje:"Error interno" });
@@ -79,6 +69,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const cita = await Cita.findByIdAndDelete(req.params.id);
+
     if (!cita) return res.status(404).json({ ok:false, mensaje:"Cita no encontrada" });
 
     res.json({ ok:true, mensaje:"Cita eliminada" });

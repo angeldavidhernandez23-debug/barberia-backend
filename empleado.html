@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💈 Panel Empleado - Agendar</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Poppins',sans-serif;background:#0c0c0c;color:#f5f5f5;line-height:1.4}
+    nav{background:rgba(0,0,0,0.85);display:flex;justify-content:space-between;align-items:center;padding:10px 24px;position:fixed;top:0;width:100%;z-index:10;border-bottom:1px solid #222}
+    nav h2{color:#d4af37;font-weight:700}
+    nav .right {display:flex;align-items:center;gap:8px}
+    #logout, #modo{background:#d4af37;border:none;border-radius:6px;padding:6px 10px;color:#111;cursor:pointer;font-weight:700}
+    .hero{height:36vh;background:url('https://images.unsplash.com/photo-1585747860715-4f98f0b8d3a5?auto=format&fit=crop&w=1500&q=80') center/cover no-repeat;display:flex;align-items:center;justify-content:center;margin-top:64px;position:relative}
+    .overlay{position:absolute;inset:0;background:rgba(0,0,0,0.65)}
+    .hero-content{position:relative;z-index:2;text-align:center;padding:30px}
+    .hero h1{color:#d4af37;font-size:2.2rem;margin-bottom:10px}
+    .hero p{color:#ddd;margin-bottom:12px}
+    .btn-cta{background:#d4af37;color:#111;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700}
+    .container{max-width:1100px;margin:32px auto;padding:0 18px}
+    .formulario{background:rgba(30,30,30,0.98);padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(212,175,55,0.08);margin-top:18px}
+    .formulario h2{color:#d4af37;text-align:center;margin-bottom:16px}
+    label{display:block;margin-top:12px;color:#ddd;font-weight:500}
+    input, select{width:100%;padding:10px;border-radius:6px;border:1px solid #333;background:#121212;color:#fff;margin-top:8px}
+    input:focus,select:focus{outline:2px solid rgba(212,175,55,0.12);border-color:#d4af37}
+    .row{display:flex;gap:12px}
+    .row .col{flex:1}
+    .btn-enviar{width:100%;background:#d4af37;color:#111;padding:12px;border:none;border-radius:8px;margin-top:16px;font-weight:700;cursor:pointer}
+    .services-list{margin-top:14px}
+    .services-list ul{list-style:none;margin-top:10px}
+    .services-list li{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#111;border-radius:6px;margin-bottom:8px}
+    .services-list button{background:#ff5a5a;border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer}
+
+    .total-box{margin-top:10px;font-size:1.05rem;color:#ffd700;font-weight:700}
+    .citas-section{margin-top:26px;background:rgba(20,20,20,0.9);padding:16px;border-radius:10px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th, td{padding:10px;border:1px solid #333;text-align:center;color:#fff}
+    th{background:#111;color:#d4af37}
+    .small-btn{padding:6px 8px;border-radius:6px;border:none;cursor:pointer}
+    .edit{background:#d4af37;color:#000}
+    .del{background:#ff4d4d;color:#fff}
+    @media (max-width:760px){.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <h2>💈 Panel Empleado</h2>
+    <div class="right">
+      <span id="usuario" style="color:#f1c93b;font-weight:700"></span>
+      <button id="modo">🌙</button>
+      <button id="logout">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1>Panel de Empleado</h1>
+      <p>Agrega citas, administra horarios y revisa las reservas</p>
+      <a class="btn-cta" href="#formulario">Agendar cita</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <section id="formulario" class="formulario" data-aos="fade-up">
+    <h2>Reserva tu turno</h2>
+
+    <form id="formCita">
+      <label for="nombre">Nombre completo:</label>
+      <input type="text" id="nombre" placeholder="Ejemplo: Carlos Pérez" required />
+
+      <label for="fecha">Fecha:</label>
+      <input type="date" id="fecha" required />
+
+      <label for="hora">Hora:</label>
+      <input type="time" id="hora" required />
+
+      <label for="servicio">Servicio:</label>
+      <select id="servicio">
+        <option value="">Selecciona un servicio</option>
+
+    <optgroup label="Corte de Cabello">
+            <option value="Clásico" data-precio="120">Clásico - $120</option>
+            <option value="Base" data-precio="120">Base - $120</option>
+            <option value="Desvanecido" data-precio="170">Desvanecido - $170</option>
+            <option value="Navaja" data-precio="180">Navaja - $180</option>
+            <option value="Fade" data-precio="200">Fade - $200</option>
+            <option value="Delineado de barba" data-precio="70">Delineado de barba - $70</option>
+            <option value="Barba spa" data-precio="140">Barba spa - $140</option>
+          </optgroup>
+
+          <optgroup label="Facial">
+            <option value="Exfoliante" data-precio="100">Exfoliante - $100</option>
+            <option value="Hidratante" data-precio="120">Hidratante - $120</option>
+            <option value="Puntos negros" data-precio="130">Puntos negros - $130</option>
+            <option value="Ozono" data-precio="140">Ozono - $140</option>
+            <option value="Mascarilla facial" data-precio="100">Mascarilla facial - $100</option>
+          </optgroup>
+
+          <optgroup label="Depilación">
+            <option value="Ceja" data-precio="60">Ceja - $60</option>
+            <option value="Nasal" data-precio="50">Nasal - $50</option>
+            <option value="Rostro" data-precio="70">Rostro - $70</option>
+            <option value="Bigote" data-precio="55">Bigote - $55</option>
+            <option value="Barba depilación" data-precio="80">Barba - $80</option>
+          </optgroup>
+
+          <optgroup label="Servicios Extras">
+            <option value="Pedicure" data-precio="200">Pedicure - $200</option>
+            <option value="Efectos de color" data-precio="300">Efectos de color - $300</option>
+            <option value="Permanente" data-precio="250">Permanente - $250</option>
+            <option value="Manicure" data-precio="180">Manicure - $180</option>
+            <option value="Lavado de cabello" data-precio="50">Lavado de cabello - $50</option>
+            <option value="Tinte" data-precio="250">Tinte - $250</option>
+          </optgroup>
+      </select>
+
+      <button type="button" id="btnAgregar" class="btn-enviar" style="margin-top:10px;">
+        Agregar servicio
+      </button>
+
+      <h3 style="margin-top:20px; color:#ffd700;">Servicios seleccionados:</h3>
+      <ul id="listaServicios"></ul>
+
+      <div id="total" style="margin-top: 15px; font-size: 18px; font-weight: bold; color: #ffd700;">
+        Total: $0
+      </div>
+
+      <button type="submit" class="btn-enviar">Agendar cita</button>
+    </form>
+  </section>
+  
+
+    <!-- CITAS -->
+    <section class="citas-section" aria-label="Citas registradas">
+      <h3 style="color:#d4af37">Citas Agendadas</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Servicios</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaCitas"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    // BASE del backend
+    const BASE = "http://localhost:3000";
+
+    // UI elementos
+    const usuarioLabel = document.getElementById("usuario");
+    const logoutBtn = document.getElementById("logout");
+    const btnModo = document.getElementById("modo");
+
+    const form = document.getElementById("formCita");
+    const nombreInput = document.getElementById("nombre");
+    const fechaInput = document.getElementById("fecha");
+    const horaInput = document.getElementById("hora");
+    const servicioSelect = document.getElementById("servicio");
+    const btnAgregar = document.getElementById("btnAgregar");
+    const listaServiciosUI = document.getElementById("listaServicios");
+    const totalBox = document.getElementById("total");
+    const tablaCitas = document.getElementById("tablaCitas");
+
+    // Estado local
+    let serviciosSeleccionados = [];
+    let total = 0;
+
+    // precios (coinciden con los data-precio de options)
+    const precios = {};
+    document.querySelectorAll("#servicio option[data-precio]").forEach(opt=>{
+      precios[opt.value] = Number(opt.dataset.precio || 0);
+    });
+
+    // mostrar usuario
+    const usuario = localStorage.getItem("usuario");
+    if (usuario) usuarioLabel.textContent = usuario;
+
+    logoutBtn.addEventListener("click", ()=> {
+      localStorage.removeItem("usuario");
+      window.location.href = "login.html";
+    });
+
+    btnModo.addEventListener("click", ()=>{
+      document.body.classList.toggle("light");
+      btnModo.textContent = document.body.classList.contains("light") ? "🌞":"🌙";
+    });
+
+    // bloquear fechas pasadas
+    function setFechaMin() {
+      const hoy = new Date().toISOString().split("T")[0];
+      fechaInput.min = hoy;
+    }
+    setFechaMin();
+
+    // ajustar horario según día (domingo diferente)
+    function ajustarHorario() {
+      if (!fechaInput.value) return;
+      const d = new Date(fechaInput.value).getDay();
+      if (d === 0) { // domingo
+        horaInput.min = "10:00";
+        horaInput.max = "16:00";
+      } else {
+        horaInput.min = "10:00";
+        horaInput.max = "20:00";
+      }
+      // si la hora actual no cumple, limpiar
+      if (horaInput.value && (horaInput.value < horaInput.min || horaInput.value > horaInput.max)) {
+        horaInput.value = "";
+      }
+    }
+    fechaInput.addEventListener("change", ajustarHorario);
+
+    // añadir servicio a la lista
+    function renderListaServicios() {
+      listaServiciosUI.innerHTML = "";
+      serviciosSeleccionados.forEach((s, i) => {
+        const li = document.createElement("li");
+        li.textContent = `${s} - $${precios[s] || 0}`;
+
+        const btn = document.createElement("button");
+        btn.textContent = "Eliminar";
+        btn.className = "small-btn";
+        btn.style.background = "#ff4d4d";
+        btn.style.color = "#fff";
+        btn.onclick = () => {
+          // quitar y recalcular
+          total -= (precios[s] || 0);
+          serviciosSeleccionados.splice(i,1);
+          renderListaServicios();
+          actualizarTotal();
+        };
+
+        li.appendChild(btn);
+        listaServiciosUI.appendChild(li);
+      });
+
+      if (serviciosSeleccionados.length === 0) {
+        listaServiciosUI.innerHTML = '<li style="color:#ccc">No hay servicios agregados</li>';
+      }
+    }
+
+    function actualizarTotal() {
+      total = serviciosSeleccionados.reduce((acc, s) => acc + (precios[s] || 0), 0);
+      totalBox.textContent = `Total: $${total}`;
+    }
+
+    btnAgregar.addEventListener("click", ()=> {
+      const s = servicioSelect.value;
+      if (!s) { alert("Selecciona un servicio"); return; }
+      serviciosSeleccionados.push(s);
+      renderListaServicios();
+      actualizarTotal();
+      servicioSelect.value = ""; // reset
+    });
+
+    // enviar cita al backend
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nombre = nombreInput.value.trim();
+      const fecha = fechaInput.value;
+      const hora = horaInput.value;
+
+      if (!nombre) { alert("Ingresa el nombre"); return; }
+      if (!fecha) { alert("Selecciona fecha"); return; }
+      if (!hora) { alert("Selecciona hora"); return; }
+      if (serviciosSeleccionados.length === 0) { alert("Agrega al menos un servicio"); return; }
+
+      // validar fecha no pasada (por seguridad en front)
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      const sel = new Date(fecha + "T00:00:00");
+      if (sel < hoy) { alert("La fecha seleccionada ya pasó"); return; }
+
+      // construir payload compatible con backend
+      const payload = {
+        nombreCliente: nombre,
+        fecha,
+        hora,
+        servicios: serviciosSeleccionados,
+        servicio: serviciosSeleccionados.join(", "),
+        total
+      };
+
+      try {
+        const res = await fetch(`${BASE}/citas`, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        // algunos backends devuelven {ok:true} u otros devuelven la cita directamente
+        if ((data && data.ok) || res.ok) {
+          // limpiar UI
+          nombreInput.value = "";
+          fechaInput.value = "";
+          horaInput.value = "";
+          serviciosSeleccionados = [];
+          renderListaServicios();
+          actualizarTotal();
+          // recargar citas
+          await cargarCitas();
+          alert("Cita agendada correctamente");
+        } else {
+          alert("No se pudo agendar: " + (data.mensaje || "error"));
+        }
+      } catch (err) {
+        console.error("Error al guardar cita:", err);
+        alert("Error de conexión al servidor");
+      }
+    });
+
+    // cargar citas y mostrarlas en la tabla
+    async function cargarCitas() {
+      try {
+        const res = await fetch(`${BASE}/citas`);
+        const data = await res.json();
+        // data puede ser array o {ok:true, citas:[]}
+        const citas = Array.isArray(data) ? data : (data.citas || []);
+        tablaCitas.innerHTML = "";
+        citas.forEach(c => {
+          const tr = document.createElement("tr");
+          const serviciosText = Array.isArray(c.servicios) ? c.servicios.join(", ") : (c.servicio || c.servicios || "");
+          const totalText = c.total !== undefined ? `$${c.total}` : "";
+          tr.innerHTML = `
+            <td>${c.nombreCliente || c.nombre || c.nombreCliente}</td>
+            <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${serviciosText}</td>
+            <td>${c.fecha || ""}</td>
+            <td>${c.hora || ""}</td>
+            <td>${totalText}</td>
+            <td>
+              <button class="small-btn edit" onclick="editarCita('${c._id}')">Editar</button>
+              <button class="small-btn del" onclick="eliminarCita('${c._id}')">Eliminar</button>
+            </td>
+          `;
+          tablaCitas.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Error cargando citas:", err);
+      }
+    }
+
+    // eliminar cita
+    async function eliminarCita(id) {
+      if (!confirm("¿Eliminar esta cita?")) return;
+      try {
+        const res = await fetch(`${BASE}/citas/${id}`, { method: "DELETE" });
+        const json = await res.json();
+        if (res.ok && (json.ok || true)) { // backend puede no devolver ok
+          await cargarCitas();
+        } else {
+          alert("No se pudo eliminar la cita");
+        }
+      } catch (err) {
+        console.error(err); alert("Error al eliminar");
+      }
+    }
+
+    // editar cita (usa prompts simples para brevity)
+    async function editarCita(id) {
+      try {
+        // obtener cita actual
+        const r = await fetch(`${BASE}/citas/${id}`);
+        const c = await r.json();
+        // Si tu backend devuelve directamente la cita, ajustar:
+        const cita = c && c._id ? c : (c.cita || c[0] || c);
+
+        const nuevoNombre = prompt("Nombre", cita.nombreCliente || cita.nombre);
+        if (nuevoNombre === null) return; // cancel
+        const nuevaFecha = prompt("Fecha (YYYY-MM-DD)", cita.fecha);
+        if (nuevaFecha === null) return;
+        const nuevaHora = prompt("Hora (HH:MM)", cita.hora);
+        if (nuevaHora === null) return;
+        // Para servicios, pedimos coma-separados
+        const serviciosStr = prompt("Servicios (separados por coma)", Array.isArray(cita.servicios) ? cita.servicios.join(", ") : (cita.servicio || cita.servicios || ""));
+        if (serviciosStr === null) return;
+        const serviciosArr = serviciosStr.split(",").map(s=>s.trim()).filter(Boolean);
+        const totalNew = serviciosArr.reduce((acc,s)=>acc + (precios[s]||0), 0);
+
+        const payload = {
+          nombreCliente: nuevoNombre,
+          fecha: nuevaFecha,
+          hora: nuevaHora,
+          servicios: serviciosArr,
+          servicio: serviciosArr.join(", "),
+          total: totalNew
+        };
+
+        const res = await fetch(`${BASE}/citas/${id}`, {
+          method: "PUT",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+        if (res.ok && (json.ok || true)) {
+          await cargarCitas();
+          alert("Cita actualizada");
+        } else {
+          alert("No se pudo actualizar");
+        }
+
+      } catch (err) {
+        console.error("Error editar cita:", err); alert("Error al editar");
+      }
+    }
+
+    // Exponer funciones global para botones en tabla
+    window.eliminarCita = eliminarCita;
+    window.editarCita = editarCita;
+
+    // init
+    renderListaServicios();
+    actualizarTotal();
+    cargarCitas();
+
+    // mejora: actualizar lista de servicios (si tu backend tiene /citas/servicios)
+    // fetch(`${BASE}/citas/servicios`).then(r=>r.json()).then(list=>{ /* llenar select si quieres */ });
+
+  </script>
+</body>
+</html>

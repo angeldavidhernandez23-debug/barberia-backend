@@ -86,63 +86,97 @@
 
     <p>¿No tienes cuenta? <a href="register.html">Crear cuenta</a></p>
   </div>
+<script>
+  const form = document.getElementById("formLogin");
+  const mensaje = document.getElementById("mensaje");
 
-  <script>
-    const form = document.getElementById("formLogin");
-    const mensaje = document.getElementById("mensaje");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    /* ============================
+       🔹 1. LOGIN DEL ADMIN
+    ============================= */
+    if (email === "admin@barber.com" && password === "12345") {
+      localStorage.setItem("rol", "admin");
+      localStorage.setItem("usuario", "Dueño");
 
-      // **ADMIN LOCAL**
-      if (email === "admin@barber.com" && password === "12345") {
-        localStorage.setItem("usuario", "admin");
+      mensaje.style.color = "#0f0";
+      mensaje.textContent = "✅ Bienvenido Dueño";
+
+      setTimeout(() => {
+        window.location.href = "admin.html";
+      }, 800);
+
+      return;
+    }
+
+    /* ============================
+       🔹 2. LOGIN DE EMPLEADOS
+    ============================= */
+    try {
+      const resEmpleado = await fetch("http://localhost:3000/login-empleado", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const dataEmpleado = await resEmpleado.json();
+
+      if (dataEmpleado.ok) {
+        localStorage.setItem("rol", "empleado");
+        localStorage.setItem("usuario", dataEmpleado.nombre);
 
         mensaje.style.color = "#0f0";
-        mensaje.textContent = "✅ Bienvenido dueño";
+        mensaje.textContent = "✔ Bienvenido empleado " + dataEmpleado.nombre;
 
         setTimeout(() => {
-          window.location.href = "admin.html";
+          window.location.href = "empleado.html";
         }, 800);
 
         return;
       }
+    } catch (err) {
+      console.log("Error empleado:", err);
+    }
 
-      // **LOGIN NORMAL DESDE MONGODB (BACKEND)**
-      try {
-        const respuesta = await fetch("http://localhost:3000/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
+    /* ============================
+       🔹 3. LOGIN DE CLIENTES / USUARIOS
+    ============================= */
+    try {
+      const respuesta = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
 
-        const data = await respuesta.json();
+      const data = await respuesta.json();
 
-        if (!data.ok) {
-          mensaje.style.color = "red";
-          mensaje.textContent = data.mensaje;
-          return;
-        }
-
-        // Guarda nombre del usuario normal
-        localStorage.setItem("usuario", data.nombre);
-
-        mensaje.style.color = "#0f0";
-        mensaje.textContent = "✔ Bienvenido " + data.nombre;
-
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 800);
-
-      } catch (error) {
+      if (!data.ok) {
         mensaje.style.color = "red";
-        mensaje.textContent = "❌ Error al conectar al servidor.";
+        mensaje.textContent = data.mensaje;
+        return;
       }
-    });
-  </script>
 
+      localStorage.setItem("rol", "cliente");
+      localStorage.setItem("usuario", data.nombre);
+
+      mensaje.style.color = "#0f0";
+      mensaje.textContent = "✔ Bienvenido " + data.nombre;
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 800);
+
+    } catch (error) {
+      mensaje.style.color = "red";
+      mensaje.textContent = "❌ Error al conectar al servidor.";
+    }
+  });
+</script>
+
+  
 </body>
 </html>
