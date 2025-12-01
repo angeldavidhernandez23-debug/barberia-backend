@@ -172,7 +172,6 @@
     const btnAgregar = document.getElementById("btnAgregar");
     const listaServiciosUI = document.getElementById("listaServicios");
     const totalBox = document.getElementById("total");
-    const serviciosSelect = document.getElementById("servicios");
     const tablaCitas = document.getElementById("tablaCitas");
 
     // Estado local
@@ -430,18 +429,6 @@
     // mejora: actualizar lista de servicios (si tu backend tiene /citas/servicios)
     // fetch(`${BASE}/citas/servicios`).then(r=>r.json()).then(list=>{ /* llenar select si quieres */ });
 
- function actualizarTotal() {
-  let total = 0;
-
-  const seleccionados = Array.from(serviciosSelect.selectedOptions);
-
-  seleccionados.forEach(op => {
-    total += Number(op.dataset.precio);
-  });
-
-  totalBox.textContent = `Total: $${total}`;
- }
- serviciosSelect.addEventListener("change", actualizarTotal);
-</script>
+  </script>
 </body>
 </html>
