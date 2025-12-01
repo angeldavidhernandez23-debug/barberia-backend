@@ -29,11 +29,11 @@ router.get("/buscar/:nombre", async (req, res) => {
 // Crear nueva cita
 router.post("/", async (req, res) => {
   try {
-    const { nombreCliente, servicios, fecha, hora } = req.body;
+    const { nombreCliente, servicios, fecha, hora ,total} = req.body;
     if (!nombreCliente || !servicios || !fecha || !hora)
       return res.status(400).json({ ok:false, mensaje:"Faltan datos" });
 
-    const nuevaCita = new Cita({ nombreCliente, servicios, fecha, hora });
+    const nuevaCita = new Cita({ nombreCliente, servicios, fecha, hora ,total});
     await nuevaCita.save();
 
     res.json({ ok:true, citaId: nuevaCita._id });
