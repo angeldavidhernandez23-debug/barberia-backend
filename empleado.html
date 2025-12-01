@@ -430,7 +430,7 @@
     // mejora: actualizar lista de servicios (si tu backend tiene /citas/servicios)
     // fetch(`${BASE}/citas/servicios`).then(r=>r.json()).then(list=>{ /* llenar select si quieres */ });
 
-function actualizarTotal() {
+ function actualizarTotal() {
   let total = 0;
 
   const seleccionados = Array.from(serviciosSelect.selectedOptions);
@@ -440,14 +440,8 @@ function actualizarTotal() {
   });
 
   totalBox.textContent = `Total: $${total}`;
-}
-serviciosSelect.addEventListener("change", actualizarTotal);
-
-
-
-
-
-
-  </script>
+ }
+ serviciosSelect.addEventListener("change", actualizarTotal);
+</script>
 </body>
 </html>
