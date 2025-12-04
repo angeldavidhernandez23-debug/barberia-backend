@@ -117,7 +117,7 @@
        🔹 2. LOGIN DE EMPLEADOS
     ============================= */
     try {
-      const resEmpleado = await fetch("http://localhost:3000/login-empleado", {
+      const resEmpleado = await fetch("https://barberia-backend-f312.onrender.com/login-empleado", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
