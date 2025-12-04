@@ -117,7 +117,7 @@
        🔹 2. LOGIN DE EMPLEADOS
     ============================= */
     try {
-      const resEmpleado = fetch("https://ia-backend-4v9i.onrender.com/login-empleado", {
+      const resEmpleado = fetch("https://barberia-backend-5s90.onrender.com/login-empleado", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -147,7 +147,7 @@
        🔹 3. LOGIN DE CLIENTES / USUARIOS
     ============================= */
     try {
-  const respuesta = await fetch("https://barberia-backend-4v9i.onrender.com/login", {
+  const respuesta = await fetch("https://barberia-backend-5s90.onrender.com/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
