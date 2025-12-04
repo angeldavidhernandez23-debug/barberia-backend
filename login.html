@@ -146,7 +146,7 @@
        🔹 3. LOGIN DE CLIENTES / USUARIOS
     ============================= */
     try {
-      const respuesta = await fetch("http://localhost:3000/login", {
+      const respuesta = await fetch("https://barberia-backend-f312.onrender.com/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })

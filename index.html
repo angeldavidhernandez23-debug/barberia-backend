@@ -560,7 +560,7 @@
       };
 
       try {
-        const res = await fetch("http://localhost:3000/citas", {
+        const res = await fetch("https://barberia-backend-f312.onrender.com/citas", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(cita)
@@ -590,7 +590,7 @@
     // ---------- cargar citas desde backend ----------
     async function cargarCitas() {
       try {
-        const res = await fetch("http://localhost:3000/citas");
+        const res = await fetch("https://barberia-backend-f312.onrender.com/citas");
         const data = await res.json();
 
         listaCitas.innerHTML = "";
