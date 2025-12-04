@@ -560,11 +560,11 @@
       };
 
       try {
-        const res = await fetch("http://localhost:3000/citas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cita)
-        });
+        fetch("https://ia-backend-4v9i.onrender.com/citas", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+})
+
 
         const data = await res.json();
 
@@ -590,15 +590,16 @@
     // ---------- cargar citas desde backend ----------
     async function cargarCitas() {
       try {
-        const res = await fetch("http://localhost:3000/citas");
-        const data = await res.json();
+    const res = await fetch("https://ia-backend-4v9i.onrender.com/citas");
+    const data = await res.json();
 
-        listaCitas.innerHTML = "";
+    listaCitas.innerHTML = "";
 
-        if (!data.ok) {
-          console.warn("Backend respondió sin ok para /citas:", data);
-          return;
-        }
+    if (!data.ok) {
+      console.warn("Backend respondió sin ok para /citas:", data);
+      return;
+    }
+
 
         data.citas.forEach(c => {
           const li = document.createElement("li");

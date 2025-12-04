@@ -117,11 +117,12 @@
        🔹 2. LOGIN DE EMPLEADOS
     ============================= */
     try {
-      const resEmpleado = await fetch("http://localhost:3000/login-empleado", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+      const resEmpleado = fetch("https://ia-backend-4v9i.onrender.com/login-empleado", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+});
+
 
       const dataEmpleado = await resEmpleado.json();
 
@@ -146,11 +147,12 @@
        🔹 3. LOGIN DE CLIENTES / USUARIOS
     ============================= */
     try {
-      const respuesta = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+      const respuesta = await fetch("https://ia-backend-4v9i.onrender.com/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email, password })
+});
+
 
       const data = await respuesta.json();
 

@@ -102,11 +102,12 @@
       const password = document.getElementById("password").value;
 
       try {
-        const respuesta = await fetch("http://localhost:3000/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nombre, email, password })
-        });
+       const respuesta = await fetch("https://ia-backend-4v9i.onrender.com/register", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ nombre, email, password })
+});
+
 
         const data = await respuesta.json();
 

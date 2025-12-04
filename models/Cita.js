@@ -5,6 +5,7 @@ const citaSchema = new mongoose.Schema({
   servicios: { type: [String], required: true },
   fecha: { type: String, required: true },
   hora: { type: String, required: true },
+  total:{ type: String, required: true },
   completada: { type: Boolean, default: false }
 });
 
