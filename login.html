@@ -147,11 +147,12 @@
        🔹 3. LOGIN DE CLIENTES / USUARIOS
     ============================= */
     try {
-      const respuesta = await fetch("https://ia-backend-4v9i.onrender.com/login", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ email, password })
-});
+  const respuesta = await fetch("https://barberia-backend-4v9i.onrender.com/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
 
 
       const data = await respuesta.json();

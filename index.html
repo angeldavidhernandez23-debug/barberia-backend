@@ -560,7 +560,7 @@
       };
 
       try {
-        fetch("https://ia-backend-4v9i.onrender.com/citas", {
+        fetch("https://barberia-backend-4v9i.onrender.com/citas", {
     method: "GET",
     headers: { "Content-Type": "application/json" }
 })
@@ -590,7 +590,7 @@
     // ---------- cargar citas desde backend ----------
     async function cargarCitas() {
       try {
-    const res = await fetch("https://ia-backend-4v9i.onrender.com/citas");
+    const res = await fetch("https://barberia-backend-4v9i.onrender.com/citas");
     const data = await res.json();
 
     listaCitas.innerHTML = "";
